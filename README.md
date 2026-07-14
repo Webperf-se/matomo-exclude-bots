@@ -1,0 +1,1 @@
+# matomo-exclude-bots
