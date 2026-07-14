@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+- Documentation: step-by-step cleanup of already-tracked bot visits
+  (GDPR Tools, report invalidation, re-archiving) including a cautious
+  SQL alternative for bulk deletion.
+
 ## 1.0.0
 
 - Initial release.
