@@ -100,9 +100,36 @@ avoid. This plugin complements it – keep both enabled.
 
 **Does it clean up historical data?**
 
-No. Use Matomo's GDPR tools (*Administration → Privacy → GDPR Tools*) to
-find and delete already-tracked bot visits, then invalidate and
-re-archive the affected date ranges.
+No, the plugin only affects new tracking requests. Already-tracked bot
+visits have to be removed in three steps, because Matomo stores both the
+raw visits and reports aggregated from them:
+
+1. **Delete the raw visits** under *Administration → Privacy → GDPR
+   Tools → Search for data subjects*. Select the affected site and add
+   filters matching the fingerprint, for example *Operating system =
+   GNU/Linux*, *Resolution = 1920x1080* and *Browser = Chrome*. Search,
+   tick *select all*, and delete. The visit list is paginated, so repeat
+   the search-and-delete until no matches remain.
+2. **Invalidate the reports** for the polluted date range, so Matomo
+   knows the aggregates no longer match the raw data:
+
+   ```
+   ./console core:invalidate-report-data --dates=2026-06-01,2026-06-30 --sites=8
+   ```
+
+   Adjust dates and site ID. If you prefer a UI, Matomo's own
+   [InvalidateReports](https://plugins.matomo.org/InvalidateReports)
+   plugin adds this under *Administration*.
+3. **Re-archive.** If you run the recommended `core:archive` cron, the
+   invalidated ranges are rebuilt on its next run. To force it
+   immediately:
+
+   ```
+   ./console core:archive --force-idsites=8
+   ```
+
+Afterwards, the affected days show bot-free numbers everywhere,
+including in period totals (weeks, months, year).
 
 **How can I verify it works?**
 
