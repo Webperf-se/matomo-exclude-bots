@@ -108,8 +108,55 @@ raw visits and reports aggregated from them:
    Tools → Search for data subjects*. Select the affected site and add
    filters matching the fingerprint, for example *Operating system =
    GNU/Linux*, *Resolution = 1920x1080* and *Browser = Chrome*. Search,
-   tick *select all*, and delete. The visit list is paginated, so repeat
-   the search-and-delete until no matches remain.
+   tick *select all*, and delete. The visit list is paginated and
+   *select all* only covers the rows on screen, so repeat the
+   search-and-delete until no matches remain. Note that the search
+   cannot be limited to a date range – it matches all retained history.
+
+   **Bulk alternative (SQL, thousands of visits).** For large waves the
+   GDPR tool gets tedious, and deleting directly in the database is
+   faster and can be date-bounded.
+
+   > ⚠️ **Be careful.** These statements permanently delete raw data
+   > and cannot be undone. Take a database backup first (at minimum
+   > `mysqldump` of the `log_visit` and `log_link_visit_action`
+   > tables), adjust the `matomo_` table prefix to your installation,
+   > and set your own site ID and date range. Always run the `SELECT
+   > COUNT(*)` first and sanity-check the number against the spike in
+   > *Visitors → Overview* before running any `DELETE`.
+
+   ```sql
+   -- 1. Count first – does this match the size of your bot wave?
+   SELECT COUNT(*) FROM matomo_log_visit
+   WHERE idsite = 8
+     AND visit_first_action_time >= '2026-07-03 00:00:00'
+     AND config_os = 'LIN'            -- GNU/Linux
+     AND config_browser_name = 'CH'   -- Chrome
+     AND config_resolution = '1920x1080';
+
+   -- 2. Delete the pageviews belonging to those visits
+   DELETE llva FROM matomo_log_link_visit_action llva
+   JOIN matomo_log_visit lv ON lv.idvisit = llva.idvisit
+   WHERE lv.idsite = 8
+     AND lv.visit_first_action_time >= '2026-07-03 00:00:00'
+     AND lv.config_os = 'LIN'
+     AND lv.config_browser_name = 'CH'
+     AND lv.config_resolution = '1920x1080';
+
+   -- 3. Delete the visits themselves (same conditions)
+   DELETE FROM matomo_log_visit
+   WHERE idsite = 8
+     AND visit_first_action_time >= '2026-07-03 00:00:00'
+     AND config_os = 'LIN'
+     AND config_browser_name = 'CH'
+     AND config_resolution = '1920x1080';
+   ```
+
+   `LIN` and `CH` are Matomo's internal codes for GNU/Linux and Chrome.
+   If the bots triggered goals on your site, also clean
+   `log_conversion` the same way; for pure pageview bots it is empty.
+   Whichever way you delete, continue with steps 2–3 below – reports
+   are aggregated separately and do not update by themselves.
 2. **Invalidate the reports** for the polluted date range, so Matomo
    knows the aggregates no longer match the raw data:
 
