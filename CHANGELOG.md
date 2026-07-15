@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- Relicensed from MIT to GPL v3 or later, matching Matomo core and the
+  Marketplace's preferred license.
+
 ## 1.0.1
 
 - Documentation: step-by-step cleanup of already-tracked bot visits
