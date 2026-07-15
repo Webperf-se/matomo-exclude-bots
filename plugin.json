@@ -7,7 +7,7 @@
         "matomo": ">=5.0.0-b1,<6.0.0-b1"
     },
     "keywords": ["bots", "spam", "tracking", "headless", "fake-traffic", "exclude"],
-    "license": "MIT",
+    "license": "GPL v3+",
     "homepage": "https://github.com/Webperf-se/matomo-exclude-bots",
     "authors": [
         {

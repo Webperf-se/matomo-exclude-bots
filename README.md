@@ -192,7 +192,7 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+GPL v3 or later. See [LICENSE](LICENSE).
 
 ## Support
 

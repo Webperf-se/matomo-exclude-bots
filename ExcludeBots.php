@@ -15,7 +15,7 @@
  * exactly 1080p arriving from Google or directly.
  *
  * @link https://github.com/Webperf-se/matomo-exclude-bots
- * @license MIT
+ * @license https://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  */
 
 namespace Piwik\Plugins\ExcludeBots;
